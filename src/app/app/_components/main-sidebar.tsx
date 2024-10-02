@@ -10,7 +10,7 @@ import {
   SidebarNavMain,
 } from "@/components/dashboard/sidebar";
 import { usePathname } from "next/navigation";
-import { MixerVerticalIcon } from "@radix-ui/react-icons";
+import { MixerVerticalIcon, CalendarIcon } from "@radix-ui/react-icons";
 import { UserDropdown } from "./user-dropdown";
 import { Session } from "next-auth";
 import { Container } from "lucide-react"
@@ -37,6 +37,10 @@ export default function MainSidebar({ user }: MainSidebarProps) {
             <SidebarNavLink href="/app" active={isActive("/app/container/1")}>
               <Container className="w-4 h-4 mr-3" />
               Container
+            </SidebarNavLink>
+            <SidebarNavLink href="/app/calendar" active={isActive("/app/calendar")}>
+              <CalendarIcon className="w-4 h-4 mr-3" />
+              Agenda
             </SidebarNavLink>
             <SidebarNavLink href="/app/settings">
               <MixerVerticalIcon className="w-4 h-4 mr-3" />
