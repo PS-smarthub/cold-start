@@ -33,10 +33,6 @@ CREATE TABLE "users" (
     "email" TEXT,
     "email_verified" TIMESTAMP(3),
     "image" TEXT,
-    "stripeCustomerId" TEXT,
-    "stripeSubscriptionId" TEXT,
-    "stripeSubscriptionStatus" TEXT,
-    "stripePriceId" TEXT,
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );
@@ -46,6 +42,45 @@ CREATE TABLE "verificationtokens" (
     "identifier" TEXT NOT NULL,
     "token" TEXT NOT NULL,
     "expires" TIMESTAMP(3) NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "Container" (
+    "id" TEXT NOT NULL,
+    "device" TEXT NOT NULL,
+    "set_point" DOUBLE PRECISION,
+    "in_validation" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "Container_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Temperature" (
+    "id" SERIAL NOT NULL,
+    "date_time" TIMESTAMP(3) NOT NULL,
+    "room_temperature" DOUBLE PRECISION NOT NULL,
+    "temperature_1" DOUBLE PRECISION NOT NULL,
+    "temperature_2" DOUBLE PRECISION NOT NULL,
+    "container_id" TEXT NOT NULL,
+
+    CONSTRAINT "Temperature_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "SchedulingContainer" (
+    "id" SERIAL NOT NULL,
+    "initial_date_time" TIMESTAMP(3) NOT NULL,
+    "ending_date_time" TIMESTAMP(3) NOT NULL,
+    "user_id_position_1" TEXT NOT NULL,
+    "user_id_position_2" TEXT NOT NULL,
+    "container_id" TEXT NOT NULL,
+    "user_name_1" TEXT NOT NULL,
+    "user_name_2" TEXT NOT NULL,
+    "position1" BOOLEAN NOT NULL DEFAULT false,
+    "position2" BOOLEAN NOT NULL DEFAULT false,
+
+    CONSTRAINT "SchedulingContainer_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -65,3 +100,9 @@ ALTER TABLE "accounts" ADD CONSTRAINT "accounts_user_id_fkey" FOREIGN KEY ("user
 
 -- AddForeignKey
 ALTER TABLE "sessions" ADD CONSTRAINT "sessions_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Temperature" ADD CONSTRAINT "Temperature_container_id_fkey" FOREIGN KEY ("container_id") REFERENCES "Container"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "SchedulingContainer" ADD CONSTRAINT "SchedulingContainer_container_id_fkey" FOREIGN KEY ("container_id") REFERENCES "Container"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

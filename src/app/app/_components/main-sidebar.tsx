@@ -14,6 +14,7 @@ import { MixerVerticalIcon, CalendarIcon } from "@radix-ui/react-icons";
 import { UserDropdown } from "./user-dropdown";
 import { Session } from "next-auth";
 import { Container } from "lucide-react"
+import Image from "next/image";
 
 type MainSidebarProps = {
   user: Session["user"] | undefined;
@@ -29,7 +30,12 @@ export default function MainSidebar({ user }: MainSidebarProps) {
   return (
     <Sidebar>
       <SidebarHeader>
-        <h1>Cold Start</h1>
+        <Image 
+        src="/assets/LOGO.svg"
+        alt="logo"
+        width={150}
+        height={100}
+        />
       </SidebarHeader>
       <SidebarMain className="flex flex-col flex-grow">
         <SidebarNav>

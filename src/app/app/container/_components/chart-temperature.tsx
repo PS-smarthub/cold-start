@@ -16,7 +16,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useQuery } from "@tanstack/react-query";
 
 interface TemperatureData {
   id: number;
@@ -27,85 +26,7 @@ interface TemperatureData {
   container_id: number;
 }
 
-const fetchTemperatures = async (): Promise<TemperatureData[]> => {
-  await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate network delay
-  return [
-    {
-      id: 0,
-      date_time: "2024-10-02T00:00:00",
-      room_temperature: 20,
-      temperature_1: 22,
-      temperature_2: 21,
-      container_id: 0,
-    },
-    {
-      id: 1,
-      date_time: "2024-10-02T04:00:00",
-      room_temperature: 19,
-      temperature_1: 23,
-      temperature_2: 22,
-      container_id: 0,
-    },
-    {
-      id: 2,
-      date_time: "2024-10-02T08:00:00",
-      room_temperature: 21,
-      temperature_1: 24,
-      temperature_2: 23,
-      container_id: 0,
-    },
-    {
-      id: 3,
-      date_time: "2024-10-02T12:00:00",
-      room_temperature: 23,
-      temperature_1: 25,
-      temperature_2: 24,
-      container_id: 0,
-    },
-    {
-      id: 4,
-      date_time: "2024-10-02T16:00:00",
-      room_temperature: 24,
-      temperature_1: 26,
-      temperature_2: 25,
-      container_id: 0,
-    },
-    {
-      id: 5,
-      date_time: "2024-10-02T20:00:00",
-      room_temperature: 22,
-      temperature_1: 24,
-      temperature_2: 23,
-      container_id: 0,
-    },
-  ];
-};
-
-export function ChartTemperature() {
-  const { data, isLoading, isError, error } = useQuery<
-    TemperatureData[],
-    Error
-  >({
-    queryKey: ["temperatures"],
-    queryFn: fetchTemperatures,
-    refetchInterval: 60000, // Refetch every 60 seconds
-  });
-
-  if (isLoading) {
-    return (
-      <div className="w-full h-full min-h-[300px] flex items-center justify-center">
-        Carregando dados...
-      </div>
-    );
-  }
-
-  if (isError) {
-    return (
-      <div className="w-full h-full min-h-[300px] flex items-center justify-center">
-        Erro ao carregar dados: {error.message}
-      </div>
-    );
-  }
+export function ChartTemperature({data}: {data: TemperatureData[]}) {
 
   return (
     <Card className="w-full">
