@@ -9,82 +9,27 @@ import {
 import { ChartTemperature } from "../_components/chart-temperature";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { User } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { Container } from "../../(main)/types";
 
-interface TemperatureData {
-  id: number;
-  date_time: string;
-  room_temperature: number;
-  temperature_1: number;
-  temperature_2: number;
-  container_id: number;
+export interface Props {
+  params: {
+    id: string;
+  };
 }
 
-const fetchTemperatures = async (): Promise<TemperatureData[]> => {
-  await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate network delay
-  return [
-    {
-      id: 0,
-      date_time: "2024-10-02T00:00:00",
-      room_temperature: 20,
-      temperature_1: 22,
-      temperature_2: 21,
-      container_id: 0,
-    },
-    {
-      id: 1,
-      date_time: "2024-10-02T04:00:00",
-      room_temperature: 19,
-      temperature_1: 23,
-      temperature_2: 22,
-      container_id: 0,
-    },
-    {
-      id: 2,
-      date_time: "2024-10-02T08:00:00",
-      room_temperature: 21,
-      temperature_1: 24,
-      temperature_2: 23,
-      container_id: 0,
-    },
-    {
-      id: 3,
-      date_time: "2024-10-02T12:00:00",
-      room_temperature: 23,
-      temperature_1: 25,
-      temperature_2: 24,
-      container_id: 0,
-    },
-    {
-      id: 4,
-      date_time: "2024-10-02T16:00:00",
-      room_temperature: 24,
-      temperature_1: 26,
-      temperature_2: 25,
-      container_id: 0,
-    },
-    {
-      id: 5,
-      date_time: "2024-10-02T20:00:00",
-      room_temperature: 22,
-      temperature_1: 24,
-      temperature_2: 23,
-      container_id: 0,
-    },
-  ];
-};
+export default function Page({ params }: Props) {
+  const { data, isLoading, isError, error } = useQuery<Container>({
+    queryKey: ["temperatures", params.id],
+    queryFn: async () => {
+      const response = await fetch(`/api/container/${params.id}`);
 
-export default function Page() {
-  const { data, isLoading, isError, error } = useQuery<
-    TemperatureData[],
-    Error
-  >({
-    queryKey: ["temperatures"],
-    queryFn: fetchTemperatures,
-    refetchInterval: 60000, // Refetch every 60 seconds
+      const data = await response.json();
+
+      return data;
+    },
+    refetchInterval: 60000,
   });
-
   if (isLoading) {
     return (
       <div className="w-full h-full min-h-[300px] flex items-center justify-center">
@@ -101,20 +46,22 @@ export default function Page() {
     );
   }
 
-  if (!data || data.length === 0) {
+  if (!data) {
     return (
       <div className="w-full h-full min-h-[300px] flex items-center justify-center">
         Nenhum dado disponível
       </div>
     );
   }
-
+  console.log(data);
   return (
     <DashboardPage>
       <DashboardPageHeader>
         <div className="flex justify-between items-center">
           <div>
-            <DashboardPageHeaderTitle>Container 1</DashboardPageHeaderTitle>
+            <DashboardPageHeaderTitle>
+              Container {data.device.split("_")[1]}
+            </DashboardPageHeaderTitle>
             <p className="text-muted-foreground text-sm">
               Visualize as informações específicas de um container
             </p>
@@ -132,7 +79,13 @@ export default function Page() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-3xl font-medium">{data[0].room_temperature} C°</p>
+                  <p className="text-3xl font-medium">
+                    {
+                      data.temperatures[data.temperatures.length - 1]
+                        .roomTemperature
+                    }{" "}
+                    C°
+                  </p>
                 </CardContent>
               </Card>
               <Card>
@@ -142,7 +95,13 @@ export default function Page() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-3xl font-medium">{data[0].temperature_1} C°</p>
+                  <p className="text-3xl font-medium">
+                    {
+                      data.temperatures[data.temperatures.length - 1]
+                        .temperature1
+                    }{" "}
+                    C°
+                  </p>
                 </CardContent>
               </Card>
               <Card>
@@ -153,41 +112,43 @@ export default function Page() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-3xl font-medium">
-                    {data[0].temperature_2} C°
+                    {
+                      data.temperatures[data.temperatures.length - 1]
+                        .temperature2
+                    }{" "}
+                    C°
                   </p>
                 </CardContent>
               </Card>
             </div>
-            <ChartTemperature data={data} />
+            <ChartTemperature data={data.temperatures} />
           </div>
 
-          <Card className="h-fit">
-            <CardHeader className="p-3">
+          <Card className="h-full">
+            <CardHeader className="text-center">
               <CardTitle className="text-lg">Painel de Controle</CardTitle>
             </CardHeader>
-            <CardContent className="p-3 space-y-4">
+            <CardContent className="px-6 space-y-4">
               <div className="grid grid-cols-1">
-                <div>
-                  <label className="block text-xs font-medium mb-1">
-                    Posição 1
+                <div className="flex items-center flex-col">
+                  <label className="block font-semibold mb-1 text-center">
+                    Set point
                   </label>
                   <Input
                     type="text"
-                    value={`${data[0].temperature_1} C°`}
-                    className="h-8 text-sm"
+                    value={`${data.temperatures[0].roomTemperature} C°`}
+                    className="h-16 text-sm w-32"
                     readOnly
                   />
                 </div>
               </div>
               <div>
-                <h3 className="text-sm font-semibold mb-1">Agendamento</h3>
-                <div className="flex items-center space-x-2 p-1 border rounded text-sm">
-                  <User className="h-4 w-4" />
-                  <span>Diego Lopes</span>
+                <h3 className="text-center font-semibold mb-1">Agendamento</h3>
+                <div className="flex items-center space-x-2 p-4 border rounded text-sm">
+                  <span className="font-semibold">
+                    {data.schedulingContainers.length < 1 && "Não agendado"}
+                  </span>
                 </div>
-              </div>
-              <div className="h-32 border rounded flex items-center justify-center">
-                <p className="text-lg text-gray-500">GRÁFICO</p>
               </div>
             </CardContent>
           </Card>

@@ -16,7 +16,7 @@ const geistMono = localFont({
   weight: "100 900",
 });
 
-export const metadata = SITE_CONFIG
+export const metadata = SITE_CONFIG;
 
 export default function RootLayout({
   children,

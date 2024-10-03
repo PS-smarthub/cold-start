@@ -1,13 +1,12 @@
 "use client";
 
 import {
-  Area,
-  AreaChart,
-  ResponsiveContainer,
-  Tooltip,
   XAxis,
   YAxis,
   Legend,
+  Line,
+  LineChart,
+  CartesianGrid,
 } from "recharts";
 import {
   Card,
@@ -16,18 +15,39 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { format, parseISO } from "date-fns";
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
 
-interface TemperatureData {
+type Temperature = {
+  containerId: string;
+  dateTime: Date;
   id: number;
-  date_time: string;
-  room_temperature: number;
-  temperature_1: number;
-  temperature_2: number;
-  container_id: number;
-}
+  roomTemperature: number;
+  temperature1: number;
+  temperature2: number;
+};
 
-export function ChartTemperature({data}: {data: TemperatureData[]}) {
+const chartConfig = {
+  roomTemperature: {
+    label: "T. Ambiente",
+    color: "hsl(var(--chart-1))",
+  },
+  temperature1: {
+    label: "T. Posição 1",
+    color: "hsl(var(--chart-2))",
+  },
+  temperature2: {
+    label: "T. Posição 2",
+    color: "hsl(var(--chart-3))",
+  },
+} satisfies ChartConfig;
 
+export function ChartTemperature({ data }: { data: Temperature[] }) {
   return (
     <Card className="w-full">
       <CardHeader>
@@ -37,76 +57,54 @@ export function ChartTemperature({data}: {data: TemperatureData[]}) {
         </CardDescription>
       </CardHeader>
       <CardContent className="flex-grow">
-        <ResponsiveContainer width="100%" height="100%" minHeight={550}>
-          <AreaChart
-            data={data}
-            margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-          >
+        <ChartContainer config={chartConfig}>
+          <LineChart data={data} accessibilityLayer>
+            <CartesianGrid vertical={false} />
             <XAxis
-              dataKey="date_time"
-              stroke="#888888"
-              fontSize={12}
               tickLine={false}
               axisLine={false}
-              tickFormatter={(value) =>
-                new Date(value).toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })
+              dataKey="dateTime"
+              tickFormatter={(date) => format(parseISO(date), "HH:mm")}
+              tickMargin={10}
+            />
+            <YAxis />
+            <ChartTooltip
+              cursor={false}
+              content={
+                <ChartTooltipContent
+                  labelFormatter={(value) =>
+                    format(parseISO(value), "HH:mm")
+                  }
+                />
               }
             />
-            <YAxis
-              stroke="#888888"
-              fontSize={12}
-              tickLine={false}
-              axisLine={false}
-              tickFormatter={(value) => `${value}°C`}
-            />
-            <Tooltip
-              labelFormatter={(label) => new Date(label).toLocaleString()}
-              formatter={(value: number) => [`${value.toFixed(1)}°C`, ""]}
-            />
             <Legend />
-            <Area
+            <Line
               type="monotone"
-              dataKey="room_temperature"
-              name="Temperatura Ambiente"
-              stroke="#8884d8"
-              fill="url(#colorRoom)"
-              fillOpacity={0.3}
+              dataKey="roomTemperature"
+              name="T. Ambiente"
+              stroke="var(--color-roomTemperature)"
+              strokeWidth={2}
+              dot={false}
             />
-            <Area
+            <Line
               type="monotone"
-              dataKey="temperature_1"
-              name="Temperatura 1"
-              stroke="#82ca9d"
-              fill="url(#colorTemp1)"
-              fillOpacity={0.3}
+              dataKey="temperature1"
+              name="T. Posição 1"
+              stroke="var(--color-temperature1)"
+              strokeWidth={2}
+              dot={false}
             />
-            <Area
+            <Line
               type="monotone"
-              dataKey="temperature_2"
-              name="Temperatura 2"
-              stroke="#ffc658"
-              fill="url(#colorTemp2)"
-              fillOpacity={0.3}
+              dataKey="temperature2"
+              name="T. Posição 2"
+              stroke="var(--color-temperature2)"
+              strokeWidth={2}
+              dot={false}
             />
-            <defs>
-              <linearGradient id="colorRoom" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8} />
-                <stop offset="95%" stopColor="#8884d8" stopOpacity={0} />
-              </linearGradient>
-              <linearGradient id="colorTemp1" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#82ca9d" stopOpacity={0.8} />
-                <stop offset="95%" stopColor="#82ca9d" stopOpacity={0} />
-              </linearGradient>
-              <linearGradient id="colorTemp2" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#ffc658" stopOpacity={0.8} />
-                <stop offset="95%" stopColor="#ffc658" stopOpacity={0} />
-              </linearGradient>
-            </defs>
-          </AreaChart>
-        </ResponsiveContainer>
+          </LineChart>
+        </ChartContainer>
       </CardContent>
     </Card>
   );

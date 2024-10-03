@@ -9,14 +9,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  LockClosedIcon,
-  MixerVerticalIcon,
-  PersonIcon,
-  RocketIcon,
-} from "@radix-ui/react-icons";
+import { LockClosedIcon } from "@radix-ui/react-icons";
+import { UserCircle, Palette } from "lucide-react";
 import { Session } from "next-auth";
 import { signOut } from "next-auth/react";
+import Link from "next/link";
 
 type UserdropdwonProps = {
   user: Session["user"] | undefined;
@@ -61,22 +58,22 @@ export function UserDropdown({ user }: UserdropdwonProps) {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <PersonIcon className="w-3 h-3 mr-3" />
-            Meu perfil
+          <DropdownMenuItem asChild>
+            <Link href={"/app/settings"}>
+              <UserCircle className="w-4 h-4 mr-3" />
+              Meu perfil
+            </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem>
-            <MixerVerticalIcon className="w-3 h-3 mr-3" />
-            Configurações
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <RocketIcon className="w-3 h-3 mr-3" />
-            Upgrade
+          <DropdownMenuItem asChild>
+            <Link href={"/app/settings/theme"}>
+              <Palette className="w-4 h-4 mr-3" />
+              <span>Aparência</span>
+            </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => signOut()}>
-          <LockClosedIcon className="w-3 h-3 mr-3" />
+          <LockClosedIcon className="w-4 h-4 mr-3" />
           Log out
         </DropdownMenuItem>
       </DropdownMenuContent>

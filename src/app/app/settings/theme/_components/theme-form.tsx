@@ -102,9 +102,9 @@ export function ThemeForm() {
 						/>
 					</CardContent>
 				</Card>
-				<Button disabled={form.formState.isSubmitting} type="submit">
-					{form.formState.isSubmitting && "Atualizando..."}
-					{!form.formState.isSubmitting && "Atualizar"}
+				<Button disabled={form.formState.isSubmitting} type="submit" className="font-medium">
+					{form.formState.isSubmitting && "Salvando..."}
+					{!form.formState.isSubmitting && "Salvar"}
 				</Button>
 			</form>
 		</Form >)

@@ -11,7 +11,12 @@ const getContainerList = async () => {
       throw new Error("Não autenticado");
     }
 
-    const containerList = await db.container.findMany();
+    const containerList = await db.container.findMany({
+      include: {
+        temperatures: true,
+        schedulingContainers: true,
+      },
+    });
 
     return containerList;
   } catch (error) {
