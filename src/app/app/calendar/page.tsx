@@ -5,8 +5,14 @@ import {
   DashboardPageMain,
 } from "@/components/dashboard/page";
 import SchedulingCalendar from "./_components/scheduling-calendar";
+import SchedulingDialog from "./_components/scheduling-dialog";
+import { Button } from "@/components/ui/button";
+import { getAllContainerName, getAllSchedulings } from "./actions";
 
-export default function Page() {
+export default async function Page() {
+  const schedulings = await getAllSchedulings();
+  const containerList = await getAllContainerName();
+
   return (
     <DashboardPage>
       <DashboardPageHeader>
@@ -17,10 +23,13 @@ export default function Page() {
               Monitore os períodos de agendamento dos containers
             </p>
           </div>
+          <SchedulingDialog containers={containerList}>
+            <Button>Novo Agendamento</Button>
+          </SchedulingDialog>
         </div>
       </DashboardPageHeader>
       <DashboardPageMain>
-        <SchedulingCalendar />
+        <SchedulingCalendar schedulings={schedulings} />
       </DashboardPageMain>
     </DashboardPage>
   );

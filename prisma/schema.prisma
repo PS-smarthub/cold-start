@@ -59,35 +59,35 @@ model VerificationToken {
 }
 
 model Container {
-  id                   String                 @id @default(cuid())
+  id                   String                @id @default(cuid())
   device               String
-  setPoint             Float?                  @map("set_point")
-  inValidation         Boolean                @default(false) @map("in_validation")
-  createdAt            DateTime               @default(now())
+  setPoint             Float?                @map("set_point")
+  inValidation         Boolean               @default(false) @map("in_validation")
+  createdAt            DateTime              @default(now())
   temperatures         Temperature[]
   schedulingContainers SchedulingContainer[]
 }
 
 model Temperature {
-  id               Int       @id @default(autoincrement())
-  dateTime         DateTime  @map("date_time")
-  roomTemperature  Float     @map("room_temperature")
-  temperature1     Float     @map("temperature_1")
-  temperature2     Float     @map("temperature_2")
-  containerId      String    @map("container_id")
-  container        Container @relation(fields: [containerId], references: [id])
+  id              Int       @id @default(autoincrement())
+  dateTime        DateTime  @map("date_time")
+  roomTemperature Float     @map("room_temperature")
+  temperature1    Float     @map("temperature_1")
+  temperature2    Float     @map("temperature_2")
+  containerId     String    @map("container_id")
+  container       Container @relation(fields: [containerId], references: [id])
 }
 
 model SchedulingContainer {
-  id                Int       @id @default(autoincrement())
-  initialDateTime   DateTime  @map("initial_date_time")
-  endingDateTime    DateTime  @map("ending_date_time")
-  userIdPosition1   String    @map("user_id_position_1")
-  userIdPosition2   String    @map("user_id_position_2")
-  containerId       String    @map("container_id")
-  userName1         String    @map("user_name_1")
-  userName2         String    @map("user_name_2")
-  position1         Boolean   @default(false)
-  position2         Boolean   @default(false)
-  container         Container @relation(fields: [containerId], references: [id])
+  id              String    @id @default(cuid())
+  initialDateTime DateTime  @map("initial_date_time")
+  endingDateTime  DateTime  @map("ending_date_time")
+  userIdPosition1 String    @map("user_id_position_1")
+  userIdPosition2 String?   @map("user_id_position_2")
+  containerId     String    @map("container_id")
+  userName1       String    @map("user_name_1")
+  userName2       String?   @map("user_name_2")
+  position1       Boolean?  @default(false)
+  position2       Boolean?  @default(false)
+  container       Container @relation(fields: [containerId], references: [id])
 }

@@ -147,6 +147,7 @@ export default function Page({ params }: Props) {
                 <div className="flex items-center space-x-2 p-4 border rounded text-sm">
                   <span className="font-semibold">
                     {data.schedulingContainers.length < 1 && "Não agendado"}
+                    {data.schedulingContainers.length > 1 && data.schedulingContainers[0].userName1 }
                   </span>
                 </div>
               </div>

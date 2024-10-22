@@ -11,6 +11,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(db),
   session: {
     strategy: "jwt",
+    maxAge: 60 * 60 * 24,
   },
   providers: [
     Entra({
@@ -50,7 +51,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const pictureBase64 = Buffer.from(pictureBuffer).toString("base64");
         session.user.image = `data:image/jpeg;base64, ${pictureBase64} `;
       }
-
       session.user.token = token.accessToken as string;
       return session;
     },
