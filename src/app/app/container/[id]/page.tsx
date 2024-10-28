@@ -11,6 +11,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useQuery } from "@tanstack/react-query";
 import { Container } from "../../(main)/types";
+import { Button } from "@/components/ui/button";
+import { updatSetPoint } from "../actions";
+import { useForm } from "react-hook-form";
+import { SetPointFormData, updateSetPointSchema } from "../schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "@/hooks/use-toast";
+import { CheckIcon } from "@radix-ui/react-icons";
 
 export interface Props {
   params: {
@@ -19,6 +26,10 @@ export interface Props {
 }
 
 export default function Page({ params }: Props) {
+  const form = useForm<SetPointFormData>({
+    resolver: zodResolver(updateSetPointSchema),
+  });
+
   const { data, isLoading, isError, error } = useQuery<Container>({
     queryKey: ["temperatures", params.id],
     queryFn: async () => {
@@ -53,7 +64,33 @@ export default function Page({ params }: Props) {
       </div>
     );
   }
-  console.log(data);
+
+  const handleSaveSetPoint = async () => {
+    const valueFromInput = form.getValues("setPointValue");
+
+    try {
+      await updatSetPoint({
+        containerId: data.id,
+        value: Number(valueFromInput),
+      });
+
+      toast({
+        description: (
+          <div className="flex items-center gap-2">
+            <CheckIcon className="h-4 w-4" />
+            <p>Set point alterado com sucesso!</p>
+          </div>
+        ),
+      });
+    } catch (err) {
+      if (err instanceof Error) {
+        toast({
+          variant: "destructive",
+          description: "Erro ao alterar o set point",
+        });
+      }
+    }
+  };
   return (
     <DashboardPage>
       <DashboardPageHeader>
@@ -129,27 +166,31 @@ export default function Page({ params }: Props) {
               <CardTitle className="text-lg">Painel de Controle</CardTitle>
             </CardHeader>
             <CardContent className="px-6 space-y-4">
-              <div className="grid grid-cols-1">
-                <div className="flex items-center flex-col">
-                  <label className="block font-semibold mb-1 text-center">
-                    Set point
-                  </label>
+              <div className="flex items-center justify-center w-full">
+                <div className="max-w-screen-sm space-y-2">
                   <Input
-                    type="text"
-                    value={`${data.temperatures[0].roomTemperature} C°`}
-                    className="h-16 text-sm w-32"
-                    readOnly
+                    {...form.register("setPointValue")}
+                    id="number-input"
+                    type="number"
+                    defaultValue={data.setPoint as number}
+                    step={0.25}
+                    className="text-center"
                   />
                 </div>
               </div>
+
               <div>
                 <h3 className="text-center font-semibold mb-1">Agendamento</h3>
                 <div className="flex items-center space-x-2 p-4 border rounded text-sm">
                   <span className="font-semibold">
                     {data.schedulingContainers.length < 1 && "Não agendado"}
-                    {data.schedulingContainers.length > 1 && data.schedulingContainers[0].userName1 }
+                    {data.schedulingContainers.length >= 1 &&
+                      data.schedulingContainers[0].userName1}
                   </span>
                 </div>
+              </div>
+              <div className="flex justify-center">
+                <Button onClick={handleSaveSetPoint}>Salvar</Button>
               </div>
             </CardContent>
           </Card>
